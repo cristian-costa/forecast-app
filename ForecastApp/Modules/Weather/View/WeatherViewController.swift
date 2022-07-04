@@ -16,6 +16,7 @@ class WeatherViewController: UIViewController {
     var weatherObj = WeatherModel()
     var hourlyArr = [HourlyModel]()
     var dailyArr = [DailyModel]()
+    var cityToFetch = LocationModelPermanent()
     
     lazy var scrollView: UIScrollView = {
         let view = UIScrollView(frame: .zero)
@@ -406,15 +407,28 @@ extension WeatherViewController: WeatherViewModelDelegate {
     
     func fetchWeatherError() {
         DispatchQueue.main.async {
-            let alert = UIAlertController(title: "Error", message: "We couldn't get the weather forecast, please try again", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Accept", style: .default, handler: nil))
-            self.present(alert, animated: true, completion: nil)
+            let alert = UIAlertController(title: "Fail", message: "We couldn't get the weather forecast, please try again", preferredStyle: .alert)
+            let actionRetry = UIAlertAction(title: "Retry?", style: .default) { [weak self] _ in
+                guard let city = self?.cityToFetch else {
+                    self?.locationManager.requestLocation()
+                    return
+                }
+                self?.viewModel?.fetch(latitude: city.latitude, longitute: city.longitude)
+                self?.updateMap(latitude: city.latitude, longitute: city.longitude)
+            }
+            let actionCancel = UIAlertAction(title: "Cancel", style: .destructive)
+            
+            alert.addAction(actionRetry)
+            alert.addAction(actionCancel)
+            
+            self.present(alert, animated: true)
         }
     }
 }
 
 extension WeatherViewController: CitiesViewModelDelegate {
     func passCity(city: LocationModelPermanent) {
+        self.cityToFetch = city
         viewModel?.fetch(latitude:  city.latitude, longitute: city.longitude)
         updateMap(latitude: city.latitude, longitute: city.longitude)
         navigationItem.title = city.place

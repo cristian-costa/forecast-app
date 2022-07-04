@@ -15,13 +15,6 @@ class WeatherViewController: UIViewController {
     var weatherObj = WeatherModel()
     var hourlyArr = [HourlyModel]()
     var dailyArr = [DailyModel]()
-    
-    var placeToShow: String?
-    var latToShow: Double?
-    var lonToShow: Double?
-    
-    var currentLat: Double?
-    var currentLon: Double?
 
     lazy var contentViewSize = CGSize(width: self.view.frame.width, height: self.view.frame.height)
     
@@ -59,14 +52,6 @@ class WeatherViewController: UIViewController {
         view.layer.cornerRadius = 15.0
         return view
     }()
-    
-//    private let sensacionTermicaLabel: UILabel = {
-//        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
-//        label.text = "Sensacion termica: 10"
-//        label.textColor = .black
-//        label.font = UIFont.systemFont(ofSize: 20, weight: .medium)
-//        return label
-//    }()
     
     private let maxLabel: UILabel = {
         let label = UILabel()
@@ -181,27 +166,16 @@ class WeatherViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         locationManager.delegate = self
-        
-        if latToShow == nil && lonToShow == nil || latToShow == 0.0 && lonToShow == 0.0 {
-            print("NIL")
-            locationManager.requestLocation()
-            navigationItem.title = "Mi ubicacion"
-        } else {
-            print("FETCH")
-            viewModel?.fetch(latitude: latToShow!, longitute: lonToShow!)
-            updateMap(latitude: 35, longitute: 139)
-            navigationItem.title = placeToShow
-        }
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.requestLocation()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        locationManager.requestWhenInUseAuthorization()
-        configureNavigationBar()
-        setupView()
-        
         viewModel = WeatherViewModel()
         viewModel?.delegate = self
+        configureNavigationBar()
+        setupView()
     }
 
     private func updateMap(latitude: CLLocationDegrees, longitute: CLLocationDegrees) {
@@ -304,6 +278,20 @@ extension WeatherViewController {
         navigationItem.title = "Mi ubicacion"
         navigationController?.navigationBar.tintColor = .black
         navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "line.3.horizontal")?.withRenderingMode(.alwaysOriginal).withTintColor(.white), style: .plain, target: self, action: #selector(showCity))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "location.circle")?.withRenderingMode(.alwaysOriginal).withTintColor(.white), style: .plain, target: self, action: #selector(fetchLocation))
+    }
+    
+    @objc func fetchLocation() {
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.requestLocation()
+        navigationItem.title = "Mi ubicacion"
+    }
+    
+    @objc func showCity() {
+        let citiesViewController = CitiesViewController()
+        citiesViewController.delegate = self
+        self.navigationController?.pushViewController(citiesViewController, animated: true)
     }
 }
 
@@ -312,10 +300,8 @@ extension WeatherViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.first {
             locationManager.stopUpdatingLocation()
-            self.currentLat = location.coordinate.latitude
-            self.currentLon = location.coordinate.longitude
-            viewModel?.fetch(latitude: currentLat!, longitute: currentLon!)
-            self.updateMap(latitude: currentLat!, longitute: currentLon!)
+            viewModel?.fetch(latitude: location.coordinate.latitude, longitute: location.coordinate.longitude)
+            self.updateMap(latitude: location.coordinate.latitude, longitute: location.coordinate.longitude)
         }
     }
     
@@ -384,6 +370,12 @@ extension WeatherViewController: WeatherViewModelDelegate {
             print("Error !")
         }
     }
-    
-    
+}
+
+extension WeatherViewController: CitiesViewModelDelegate {
+    func passCity(city: LocationModelPermanent) {
+        viewModel?.fetch(latitude:  city.latitude, longitute: city.longitude)
+        updateMap(latitude: city.latitude, longitute: city.longitude)
+        navigationItem.title = city.place
+    }
 }

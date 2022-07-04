@@ -52,6 +52,16 @@
       </BuildableProductRunnable>
       <EnvironmentVariables>
          <EnvironmentVariable
+            key = "baseURLLocation"
+            value = "https://api.mapbox.com/geocoding/v5/mapbox.places/"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "apiKeyLocation"
+            value = "pk.eyJ1IjoiY3Jpc3RpYW5jb3N0YTk0IiwiYSI6ImNrcGFmNHBweDBwMmoyeW11bnhhZXB6M3gifQ.olOZwocaBmIv7JsK924Cyg"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
             key = "baseURL"
             value = "https://api.openweathermap.org/data/2.5/onecall?exclude=minutely&amp;units=metric&amp;lang=es&amp;"
             isEnabled = "YES">

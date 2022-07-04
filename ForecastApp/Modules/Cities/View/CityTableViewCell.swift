@@ -46,5 +46,4 @@ class CityTableViewCell: SwipeTableViewCell {
             self?.cityLabel.text = city
         }
     }
-
 }

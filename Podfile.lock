@@ -1,16 +1,20 @@
 PODS:
   - Alamofire (5.6.1)
+  - SwipeCellKit (2.7.1)
 
 DEPENDENCIES:
   - Alamofire (~> 5.4)
+  - SwipeCellKit
 
 SPEC REPOS:
   trunk:
     - Alamofire
+    - SwipeCellKit
 
 SPEC CHECKSUMS:
   Alamofire: 87bd8c952f9a4454320fce00d9cc3de57bcadaf5
+  SwipeCellKit: 3972254a826da74609926daf59b08d6c72e619ea
 
-PODFILE CHECKSUM: 0b5d4c57660dd88a94b0356e915992656522c7d8
+PODFILE CHECKSUM: 3953abf31792763ea40f25afd708a55a9df29d4f
 
 COCOAPODS: 1.11.3

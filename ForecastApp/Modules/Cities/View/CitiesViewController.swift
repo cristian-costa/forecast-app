@@ -7,6 +7,7 @@
 
 import UIKit
 import CoreData
+import SwipeCellKit
 
 class CitiesViewController: UIViewController {
     weak var delegate: CitiesViewModelDelegate?
@@ -72,6 +73,11 @@ class CitiesViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .black
         navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "plus")?.withRenderingMode(.alwaysOriginal).withTintColor(.white), style: .plain, target: self, action: #selector(searchCity))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.backward")?.withRenderingMode(.alwaysOriginal).withTintColor(.white), style: .plain, target: self, action: #selector(backBtnPressed))
+    }
+    
+    @objc func backBtnPressed() {
+        self.navigationController?.popViewController(animated: true)
     }
     
     @objc func searchCity() {
@@ -82,7 +88,7 @@ class CitiesViewController: UIViewController {
 }
 
 //MARK: - TableView Functions
-extension CitiesViewController: UITableViewDelegate, UITableViewDataSource {
+extension CitiesViewController: UITableViewDelegate, UITableViewDataSource, SwipeTableViewCellDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return cityArrayDB.count
     }
@@ -90,6 +96,7 @@ extension CitiesViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CityTableViewCell.identifier, for: indexPath) as? CityTableViewCell else { return UITableViewCell() }
         cell.configureCell(city: cityArrayDB[indexPath.row].place!)
+        cell.delegate = self
         return cell
     }
     
@@ -102,6 +109,25 @@ extension CitiesViewController: UITableViewDelegate, UITableViewDataSource {
         delegate?.passCity(city: cityArrayDB[indexPath.row])
         dismiss(animated: true, completion: nil)
         self.navigationController?.popViewController(animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, editActionsOptionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeOptions {
+        var options = SwipeOptions()
+        options.expansionStyle = .destructive
+        return options
+    }
+
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
+        guard orientation == .right else { return nil }
+
+        let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
+            self.viewModel?.deleteCity(index: indexPath.row)
+            self.cityArrayDB.remove(at: indexPath.row)
+            self.viewModel?.saveLocation()
+        }
+
+        deleteAction.image = UIImage(named: "delete-icon")
+        return [deleteAction]
     }
 }
 

@@ -7,5 +7,6 @@ target 'ForecastApp' do
 
   # Pods for ForecastApp
   pod 'Alamofire', '~> 5.4'
+  pod 'SwipeCellKit'
 
 end

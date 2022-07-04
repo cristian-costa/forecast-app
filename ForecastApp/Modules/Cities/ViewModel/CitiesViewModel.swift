@@ -49,4 +49,9 @@ struct CitiesViewModel {
     mutating func appendCity(city: LocationModelPermanent) {
         cityArrayDB.append(city)
     }
+    
+    func deleteCity(index: Int) {
+        self.context.delete(self.cityArrayDB[index])
+
+    }
 }

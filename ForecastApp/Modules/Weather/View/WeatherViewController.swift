@@ -12,19 +12,27 @@ import CoreLocation
 class WeatherViewController: UIViewController {
     private var viewModel: WeatherViewModel?
     private var locationManager = CLLocationManager()
+    private var dataFromCities = false
     var weatherObj = WeatherModel()
     var hourlyArr = [HourlyModel]()
     var dailyArr = [DailyModel]()
-
-    lazy var contentViewSize = CGSize(width: self.view.frame.width, height: self.view.frame.height)
     
     lazy var scrollView: UIScrollView = {
         let view = UIScrollView(frame: .zero)
         view.frame = self.view.bounds
-        view.contentSize = contentViewSize
+//        view.contentSize = contentViewSize
         view.autoresizingMask = .flexibleHeight
         view.showsHorizontalScrollIndicator = true
         view.bounces = true
+        view.isScrollEnabled = true
+        view.backgroundColor = .clear
+        return view
+    }()
+    
+    lazy var containerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .clear
+//        view.frame.size = contentViewSize
         return view
     }()
     
@@ -125,7 +133,7 @@ class WeatherViewController: UIViewController {
         let label = UILabel()
         label.text = "-"
         label.textColor = .white
-        label.font = UIFont.systemFont(ofSize: 20, weight: .medium)
+        label.font = UIFont.systemFont(ofSize: 17, weight: .medium)
         return label
     }()
     
@@ -133,7 +141,7 @@ class WeatherViewController: UIViewController {
         let label = UILabel()
         label.text = "-"
         label.textColor = .white
-        label.font = UIFont.systemFont(ofSize: 20, weight: .medium)
+        label.font = UIFont.systemFont(ofSize: 17, weight: .medium)
         return label
     }()
     
@@ -167,7 +175,12 @@ class WeatherViewController: UIViewController {
         super.viewWillAppear(true)
         locationManager.delegate = self
         locationManager.requestWhenInUseAuthorization()
-        locationManager.requestLocation()
+        if dataFromCities == false {
+            locationManager.requestLocation()
+        }
+        collectionViewHourly.setContentOffset(CGPoint.zero, animated: true)
+        collectionViewDaily.setContentOffset(CGPoint.zero, animated: true)
+
     }
     
     override func viewDidLoad() {
@@ -197,17 +210,20 @@ extension WeatherViewController {
         
         //Scroll View
         view.addSubview(scrollView)
-        scrollView.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor)
+//        scrollView.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor)
         
+        scrollView.addSubview(containerView)
+//        containerView.anchor(top: scrollView.topAnchor, left: scrollView.leftAnchor, bottom: scrollView.bottomAnchor, right: scrollView.rightAnchor)
+
         //Condition Label
-        scrollView.addSubview(conditionWeatherLabel)
-        conditionWeatherLabel.centerX(inView: scrollView)
-        conditionWeatherLabel.anchor(top: scrollView.safeAreaLayoutGuide.topAnchor, paddingTop: 20)
-        
+        containerView.addSubview(conditionWeatherLabel)
+        conditionWeatherLabel.centerX(inView: containerView)
+        conditionWeatherLabel.anchor(top: containerView.safeAreaLayoutGuide.topAnchor, paddingTop: 20)
+
         //First View (labelTemp, symbolTemp, maxLabel, minLabel, dateLabel)
-        scrollView.addSubview(firstView)
-        firstView.anchor(top: conditionWeatherLabel.topAnchor, left: scrollView.leftAnchor, right: scrollView.rightAnchor, paddingTop: 30, paddingLeft: 50, paddingRight: 50)
-        firstView.centerX(inView: scrollView)
+        containerView.addSubview(firstView)
+        firstView.anchor(top: conditionWeatherLabel.topAnchor, left: containerView.leftAnchor, right: containerView.rightAnchor, paddingTop: 30, paddingLeft: 50, paddingRight: 50)
+        firstView.centerX(inView: containerView)
         
         //Label Temp
         firstView.addSubview(tempLabel)
@@ -232,43 +248,53 @@ extension WeatherViewController {
         dateLabel.anchor(bottom: firstView.bottomAnchor, paddingBottom: 15)
         
         //Map
-        scrollView.addSubview(mapView)
-        mapView.centerX(inView: scrollView)
-        mapView.anchor(top: firstView.bottomAnchor, left: scrollView.leftAnchor, right: scrollView.rightAnchor, paddingTop: 30, paddingLeft: 50, paddingRight: 50)
+        containerView.addSubview(mapView)
+        mapView.centerX(inView: containerView)
+        mapView.anchor(top: firstView.bottomAnchor, left: containerView.leftAnchor, right: containerView.rightAnchor, paddingTop: 30, paddingLeft: 50, paddingRight: 50)
         mapView.setHeight(200)
         
         //Separator
-        scrollView.addSubview(separatorView)
-        separatorView.centerX(inView: scrollView)
-        separatorView.anchor(top: mapView.bottomAnchor, left: scrollView.leftAnchor, right: scrollView.rightAnchor, paddingTop: 30, paddingLeft: 20, paddingRight: 20)
+        containerView.addSubview(separatorView)
+        separatorView.centerX(inView: containerView)
+        separatorView.anchor(top: mapView.bottomAnchor, left: containerView.leftAnchor, right: containerView.rightAnchor, paddingTop: 30, paddingLeft: 20, paddingRight: 20)
         
         //Humidity
         scrollView.addSubview(humidityLabel)
         humidityLabel.anchor(top: separatorView.topAnchor, left: scrollView.leftAnchor, paddingTop: 15, paddingLeft: 30)
         
         //Other Label
-        scrollView.addSubview(pressureLabel)
-        pressureLabel.anchor(top: separatorView.topAnchor, right: scrollView.rightAnchor, paddingTop: 15, paddingRight: 30)
+        containerView.addSubview(pressureLabel)
+        pressureLabel.anchor(top: separatorView.topAnchor, right: containerView.rightAnchor, paddingTop: 15, paddingRight: 30)
         
         //Separator
-        scrollView.addSubview(separatorView2)
-        separatorView2.centerX(inView: scrollView)
-        separatorView2.anchor(top: humidityLabel.bottomAnchor, left: scrollView.leftAnchor, right: scrollView.rightAnchor, paddingTop: 15, paddingLeft: 0, paddingRight: 0)
+        containerView.addSubview(separatorView2)
+        separatorView2.centerX(inView: containerView)
+        separatorView2.anchor(top: humidityLabel.bottomAnchor, left: containerView.leftAnchor, right: containerView.rightAnchor, paddingTop: 15, paddingLeft: 0, paddingRight: 0)
         
         //Daily Collection View
-        scrollView.addSubview(collectionViewDaily)
-        collectionViewDaily.anchor(top: separatorView2.bottomAnchor, left: scrollView.leftAnchor, right: scrollView.rightAnchor, paddingTop: 0, paddingLeft: 10)
+        containerView.addSubview(collectionViewDaily)
+        collectionViewDaily.anchor(top: separatorView2.bottomAnchor, left: containerView.leftAnchor, right: containerView.rightAnchor, paddingTop: 0, paddingLeft: 10)
         collectionViewDaily.setHeight(70)
         
         //Separator
-        scrollView.addSubview(separatorView3)
-        separatorView3.centerX(inView: scrollView)
-        separatorView3.anchor(top: collectionViewDaily.bottomAnchor, left: scrollView.leftAnchor, right: scrollView.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingRight: 0)
+        containerView.addSubview(separatorView3)
+        separatorView3.centerX(inView: containerView)
+        separatorView3.anchor(top: collectionViewDaily.bottomAnchor, left: containerView.leftAnchor, right: containerView.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingRight: 0)
         
         //Hourly Collection View
-        scrollView.addSubview(collectionViewHourly)
-        collectionViewHourly.anchor(top: separatorView3.bottomAnchor, left: scrollView.leftAnchor, right: scrollView.rightAnchor, paddingTop: 0, paddingLeft: 10)
+        containerView.addSubview(collectionViewHourly)
+        collectionViewHourly.anchor(top: separatorView3.bottomAnchor, left: containerView.leftAnchor, right: containerView.rightAnchor, paddingTop: 0, paddingLeft: 10)
         collectionViewHourly.setHeight(140)
+ 
+        //size = 896. contentViewSize
+        let sizeContent = 896-(navigationController?.navigationBar.frame.height ?? 0.0)
+        var sizeHeight: CGFloat = self.view.frame.size.height
+        if self.view.frame.height - (navigationController?.navigationBar.frame.height ?? 0.0) < sizeContent {
+            sizeHeight = sizeContent
+        }
+        let contentViewSize = CGSize(width: self.view.frame.width, height: sizeHeight)
+        scrollView.contentSize = contentViewSize
+        containerView.frame.size = contentViewSize
     }
     
     func configureNavigationBar() {
@@ -310,7 +336,7 @@ extension WeatherViewController: CLLocationManagerDelegate {
     }
 }
 
-//MARK: - Collection View Funcs
+//MARK: - CollectionView Funcs
 extension WeatherViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == collectionViewDaily {
@@ -343,7 +369,7 @@ extension WeatherViewController: UICollectionViewDelegate, UICollectionViewDataS
     }
 }
 
-//MARK: - WeatherViewModelDelegate
+//MARK: - Delegates
 extension WeatherViewController: WeatherViewModelDelegate {
     func fetchWeatherSuccess(weather: WeatherModel) {
         DispatchQueue.main.async { [weak self] in
@@ -357,9 +383,7 @@ extension WeatherViewController: WeatherViewModelDelegate {
             self?.tempLabel.text = "\(weather.getCurrentTemp())"
             self?.dateLabel.text = self?.viewModel?.getCurrentDate(timeZone: weather.getTimezone())
             self?.humidityLabel.text = "Húmedad: \(weather.getCurrentHumidity())%"
-            self?.pressureLabel.text = "Presión: \(weather.getCurrentPressure())"
-            
-            
+            self?.pressureLabel.text = "Presión: \(weather.getCurrentPressure()) hPa"
             self?.collectionViewHourly.reloadData()
             self?.collectionViewDaily.reloadData()
         }
@@ -367,7 +391,9 @@ extension WeatherViewController: WeatherViewModelDelegate {
     
     func fetchWeatherError() {
         DispatchQueue.main.async {
-            print("Error !")
+            let alert = UIAlertController(title: "Error", message: "No pudimos obtener el clima, reintente nuevamente", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Aceptar", style: .default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
         }
     }
 }
@@ -377,5 +403,6 @@ extension WeatherViewController: CitiesViewModelDelegate {
         viewModel?.fetch(latitude:  city.latitude, longitute: city.longitude)
         updateMap(latitude: city.latitude, longitute: city.longitude)
         navigationItem.title = city.place
+        dataFromCities = true
     }
 }

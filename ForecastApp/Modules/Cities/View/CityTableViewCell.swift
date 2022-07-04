@@ -6,8 +6,9 @@
 //
 
 import UIKit
+import SwipeCellKit
 
-class CityTableViewCell: UITableViewCell {
+class CityTableViewCell: SwipeTableViewCell {
     static let identifier = "ReusableCityCell"
 
     private let cityLabel: UILabel = {
@@ -31,7 +32,7 @@ class CityTableViewCell: UITableViewCell {
         
         //City Label
         addSubview(cityLabel)
-        cityLabel.anchor(left: self.leftAnchor, paddingLeft: 15)
+        cityLabel.anchor(left: self.leftAnchor, paddingLeft: 15, paddingRight: 15)
         cityLabel.centerY(inView: self)
     }
 

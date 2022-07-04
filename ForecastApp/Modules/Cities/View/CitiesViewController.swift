@@ -16,6 +16,8 @@ class CitiesViewController: UIViewController {
     var cityArrayDB = [LocationModelPermanent]()
 
     lazy var contentViewSize = CGSize(width: self.view.frame.width, height: self.view.frame.height)
+    
+    var background = "sun.background"
 
     var backgroundImageView: UIImageView = {
         let imageView = UIImageView(frame: .zero)
@@ -57,6 +59,7 @@ class CitiesViewController: UIViewController {
     
     func setupView() {
         //Background
+        backgroundImageView.image = UIImage(named: background)
         view.addSubview(backgroundImageView)
 
         //Table View
@@ -69,7 +72,7 @@ class CitiesViewController: UIViewController {
         navigationController?.setNavigationBarHidden(false, animated: false)
         navigationController?.navigationBar.barTintColor = .darkGray
         navigationController?.navigationBar.barStyle = .black
-        navigationItem.title = "Ciudades"
+        navigationItem.title = "City List"
         navigationController?.navigationBar.tintColor = .black
         navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "plus")?.withRenderingMode(.alwaysOriginal).withTintColor(.white), style: .plain, target: self, action: #selector(searchCity))
@@ -136,6 +139,9 @@ extension CitiesViewController: SearchViewControllerDelegate {
     func addCity(city: LocationModelPermanent) {
         self.dismiss(animated: true) {
             self.viewModel?.appendCity(city: city)
+            if (self.viewModel?.countCities())! > 5 {
+                self.viewModel?.deleteCity(index: 0)
+            }
             self.viewModel?.saveLocation()
             self.cityArrayDB = self.viewModel?.loadLocations() ?? []
             self.citiesTableView.reloadData()

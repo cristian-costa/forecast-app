@@ -27,15 +27,19 @@ struct SearchViewModel {
     }
     
     func cityDataToModel(_ cityData: CityData) -> [CityModel]? {
-        var cityArray = [CityModel]()
-        for i in 0...cityData.features.count-1 {
-            let placeName = cityData.features[i].place_name
-            let longitude = cityData.features[i].center[0]
-            let latitude = cityData.features[i].center[1]
+        var cityArray: [CityModel] = []
+        if cityData.features.count == 0 {
+            return cityArray
+        } else {
+            for i in 0...cityData.features.count-1 {
+                let placeName = cityData.features[i].place_name
+                let longitude = cityData.features[i].center[0]
+                let latitude = cityData.features[i].center[1]
 
-            let cityInstance = CityModel(city: placeName, long: longitude, lat: latitude)
-            cityArray.append(cityInstance)
+                let cityInstance = CityModel(city: placeName, long: longitude, lat: latitude)
+                cityArray.append(cityInstance)
+            }
+            return cityArray
         }
-        return cityArray
     }
 }

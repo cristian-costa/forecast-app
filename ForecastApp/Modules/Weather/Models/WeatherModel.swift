@@ -170,21 +170,21 @@ class DailyModel {
         
         switch dayInWeek {
             case "lunes":
-                dayInWeek = "Lun \(numberDay)"
+                dayInWeek = "Mon \(numberDay)"
             case "martes":
-                dayInWeek = "Mar \(numberDay)"
+                dayInWeek = "Tue \(numberDay)"
             case "miércoles":
-                dayInWeek = "Mie \(numberDay)"
+                dayInWeek = "Wed \(numberDay)"
             case "jueves":
-                dayInWeek = "Jue \(numberDay)"
+                dayInWeek = "Thu \(numberDay)"
             case "viernes":
-                dayInWeek = "Vie \(numberDay)"
+                dayInWeek = "Fri \(numberDay)"
             case "sábado":
-                dayInWeek = "Sab \(numberDay)"
+                dayInWeek = "Sat \(numberDay)"
             case "domingo":
-                dayInWeek = "Dom \(numberDay)"
+                dayInWeek = "Sun \(numberDay)"
             default:
-                dayInWeek = "Lun \(numberDay)"
+                dayInWeek = "Mon \(numberDay)"
         }
         return dayInWeek
     }

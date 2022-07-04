@@ -16,7 +16,8 @@ class CityTableViewCell: SwipeTableViewCell {
         label.text = "-"
         label.textColor = .white
         label.font = UIFont.systemFont(ofSize: 20, weight: .medium)
-        label.sizeToFit()
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
         label.adjustsFontSizeToFitWidth = true
         label.textAlignment = .left
         return label
@@ -32,7 +33,7 @@ class CityTableViewCell: SwipeTableViewCell {
         
         //City Label
         addSubview(cityLabel)
-        cityLabel.anchor(left: self.leftAnchor, paddingLeft: 15, paddingRight: 15)
+        cityLabel.anchor(left: self.leftAnchor, right: self.rightAnchor, paddingLeft: 15, paddingRight: 15)
         cityLabel.centerY(inView: self)
     }
 

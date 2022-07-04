@@ -63,7 +63,7 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "baseURL"
-            value = "https://api.openweathermap.org/data/2.5/onecall?exclude=minutely&amp;units=metric&amp;lang=es&amp;"
+            value = "https://api.openweathermap.org/data/2.5/onecall?exclude=minutely&amp;units=metric&amp;lang=en&amp;"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable

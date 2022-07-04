@@ -14,7 +14,7 @@ class SearchTableViewCell: UITableViewCell {
     private let cityLabel: UILabel = {
         let label = UILabel()
         label.text = "-"
-        label.textColor = .white
+        label.textColor = .black
         label.font = UIFont.systemFont(ofSize: 20, weight: .medium)
         label.sizeToFit()
         label.adjustsFontSizeToFitWidth = true

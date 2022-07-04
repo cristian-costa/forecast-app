@@ -301,21 +301,27 @@ extension WeatherViewController {
         navigationController?.setNavigationBarHidden(false, animated: false)
         navigationController?.navigationBar.barTintColor = .darkGray
         navigationController?.navigationBar.barStyle = .black
-        navigationItem.title = "Mi ubicacion"
+        navigationItem.title = "My location"
         navigationController?.navigationBar.tintColor = .black
         navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "line.3.horizontal")?.withRenderingMode(.alwaysOriginal).withTintColor(.white), style: .plain, target: self, action: #selector(showCity))
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "location.circle")?.withRenderingMode(.alwaysOriginal).withTintColor(.white), style: .plain, target: self, action: #selector(fetchLocation))
+        navigationItem.rightBarButtonItem?.isEnabled = false
     }
     
     @objc func fetchLocation() {
         locationManager.requestWhenInUseAuthorization()
         locationManager.requestLocation()
-        navigationItem.title = "Mi ubicacion"
+        navigationItem.title = "My location"
     }
     
     @objc func showCity() {
         let citiesViewController = CitiesViewController()
+        if self.weatherObj.getCurrentConditionId() == "sun.max" {
+            citiesViewController.background = "sun.background"
+        } else {
+            citiesViewController.background = "cloud.background"
+        }
         citiesViewController.delegate = self
         self.navigationController?.pushViewController(citiesViewController, animated: true)
     }
@@ -378,12 +384,21 @@ extension WeatherViewController: WeatherViewModelDelegate {
             self?.dailyArr = weather.daily!
             self?.hourlyArr = Array(hourlyArray.prefix(24))
             self?.conditionWeatherLabel.text = weather.getCurrentDescription().capitalized
-            self?.maxLabel.text = "Máx: \(weather.daily![0].maxTemperatureString())"
-            self?.minLabel.text = "Mín: \(weather.daily![0].minTemperatureString())"
+            self?.maxLabel.text = "Max: \(weather.daily![0].maxTemperatureString())"
+            self?.minLabel.text = "Min: \(weather.daily![0].minTemperatureString())"
             self?.tempLabel.text = "\(weather.getCurrentTemp())"
             self?.dateLabel.text = self?.viewModel?.getCurrentDate(timeZone: weather.getTimezone())
-            self?.humidityLabel.text = "Húmedad: \(weather.getCurrentHumidity())%"
-            self?.pressureLabel.text = "Presión: \(weather.getCurrentPressure()) hPa"
+            self?.humidityLabel.text = "Humidity: \(weather.getCurrentHumidity())%"
+            self?.pressureLabel.text = "Pressure: \(weather.getCurrentPressure()) hPa"
+            
+            if weather.getCurrentConditionId() == "sun.max" {
+                self?.backgroundImageView.image = UIImage(named: "sun.background")
+            } else {
+                self?.backgroundImageView.image = UIImage(named: "cloud.background")
+            }
+            
+            self?.navigationItem.rightBarButtonItem?.isEnabled = true
+
             self?.collectionViewHourly.reloadData()
             self?.collectionViewDaily.reloadData()
         }
@@ -391,8 +406,8 @@ extension WeatherViewController: WeatherViewModelDelegate {
     
     func fetchWeatherError() {
         DispatchQueue.main.async {
-            let alert = UIAlertController(title: "Error", message: "No pudimos obtener el clima, reintente nuevamente", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Aceptar", style: .default, handler: nil))
+            let alert = UIAlertController(title: "Error", message: "We couldn't get the weather forecast, please try again", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Accept", style: .default, handler: nil))
             self.present(alert, animated: true, completion: nil)
         }
     }

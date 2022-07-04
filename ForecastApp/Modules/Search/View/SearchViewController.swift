@@ -20,15 +20,6 @@ class SearchViewController: UIViewController {
     
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
-    var backgroundImageView: UIImageView = {
-        let imageView = UIImageView(frame: .zero)
-        imageView.image = UIImage(named: "sun.background")
-        imageView.contentMode = .scaleToFill
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.clipsToBounds = true
-        return imageView
-    }()
-    
     lazy var citiesTableView: UITableView = {
         let tableV = UITableView()
 //        tableV.separatorStyle = .none
@@ -53,15 +44,15 @@ class SearchViewController: UIViewController {
 //MARK: - View Functions
 extension SearchViewController {
     func setupView() {
-        view.addSubview(backgroundImageView)
-
+        view.backgroundColor = .white
+        
         //Search Bar
         view.addSubview(searchBar)
         searchBar.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, right: view.rightAnchor)
         searchBar.becomeFirstResponder()
         searchBar.delegate = self
-        searchBar.backgroundColor = .red
-        searchBar.barTintColor = .clear
+        searchBar.backgroundColor = .white
+        searchBar.barTintColor = .white
         
         //Table View
         view.addSubview(citiesTableView)
@@ -71,11 +62,11 @@ extension SearchViewController {
     
     func configureNavigationBar() {
         navigationController?.setNavigationBarHidden(false, animated: false)
-        navigationController?.navigationBar.barTintColor = .darkGray
+        navigationController?.navigationBar.barTintColor = .clear
         navigationController?.navigationBar.barStyle = .black
-        navigationItem.title = "Busque la ciudad"
-        navigationController?.navigationBar.tintColor = .black
-        navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
+        navigationItem.title = "Search"
+        navigationController?.navigationBar.tintColor = .clear
+        navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.black]
     }
 }
 
@@ -118,19 +109,28 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
 extension SearchViewController: SearchViewModelDelegate {
     func fetchCitySuccess(city: [CityModel]) {
         DispatchQueue.main.async {
-            for i in 0...city.count-1 {
-                let name = city[i].getPlace()
-                let latitute = city[i].getLat()
-                let longitute = city[i].getLon()
-                let locationObject = CityModel(city: name, long: longitute, lat: latitute)
-                self.cityArray.append(locationObject)
+            print(city.count)
+            if city.count == 0 {
+                let alert = UIAlertController(title: "Error", message: "No results found", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Accept", style: .default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            } else {
+                for i in 0...city.count-1 {
+                    let name = city[i].getPlace()
+                    let latitute = city[i].getLat()
+                    let longitute = city[i].getLon()
+                    let locationObject = CityModel(city: name, long: longitute, lat: latitute)
+                    self.cityArray.append(locationObject)
+                }
             }
             self.citiesTableView.reloadData()
         }
     }
     
     func fetchCityError() {
-        print("Fallo!")
+        let alert = UIAlertController(title: "Error", message: "We couldn't fetch the city", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Accept", style: .default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
     }
     
     

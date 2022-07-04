@@ -66,39 +66,23 @@ struct WeatherViewModel {
     func getCurrentDate(timeZone: Int) -> String {
         let currentDateTime = Date()
         let dateFormatterDay = DateFormatter()
-        let dateFormatterNameDay = DateFormatter()
-        let dateFormatterNameMonth = DateFormatter()
+        let dateFormatterMonth = DateFormatter()
+        let dateFormatterYear = DateFormatter()
+
         
         dateFormatterDay.dateFormat = "d"
-        dateFormatterNameDay.dateFormat = "EEEE"
-        dateFormatterNameMonth.dateFormat = "MMMM"
-        
+        dateFormatterMonth.dateFormat = "MM"
+        dateFormatterYear.dateFormat = "y"
+                
         dateFormatterDay.timeZone = TimeZone(secondsFromGMT: timeZone)
-        dateFormatterNameDay.timeZone = TimeZone(secondsFromGMT: timeZone)
-        dateFormatterNameMonth.timeZone = TimeZone(secondsFromGMT: timeZone)
+        dateFormatterMonth.timeZone = TimeZone(secondsFromGMT: timeZone)
+        dateFormatterYear.timeZone = TimeZone(secondsFromGMT: timeZone)
         
         let numberDay = dateFormatterDay.string(from: currentDateTime)
-        var date = dateFormatterNameDay.string(from: currentDateTime)
-        let month = dateFormatterNameMonth.string(from: currentDateTime)
+        let month = dateFormatterMonth.string(from: currentDateTime)
+        let year = dateFormatterYear.string(from: currentDateTime)
         
-        switch date {
-            case "lunes":
-                date = "Lunes, \(numberDay) de \(month)"
-            case "martes":
-                date = "Martes, \(numberDay) de \(month)"
-            case "miércoles":
-                date = "Miércoles, \(numberDay) de \(month)"
-            case "jueves":
-                date = "Jueves, \(numberDay) de \(month)"
-            case "viernes":
-                date = "Viernes, \(numberDay) de \(month)"
-            case "sábado":
-                date = "Sábado, \(numberDay) de \(month)"
-            case "domingo":
-                date = "Domingo, \(numberDay) de \(month)"
-            default:
-                date = "Lunes, \(numberDay) de \(month)"
-        }
+        let date = "\(month)-\(numberDay)-\(year)"
         return date
     }
 }

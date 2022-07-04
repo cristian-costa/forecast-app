@@ -9,7 +9,7 @@ import Foundation
 import CoreLocation
 
 struct WeatherService {
-    let baseURL = ProcessInfo.processInfo.environment["baseURL"] ?? "https://api.openweathermap.org/data/2.5/onecall?exclude=minutely&units=metric&lang=es&"
+    let baseURL = ProcessInfo.processInfo.environment["baseURL"] ?? "https://api.openweathermap.org/data/2.5/onecall?exclude=minutely&units=metric&lang=en&"
     let apiKey = ProcessInfo.processInfo.environment["apiKey"] ?? "29af9d657d409e90b699b86e4fe0e4b3"
     
     func fetchWeather(latitude: CLLocationDegrees, longitute: CLLocationDegrees, onComplete: @escaping (WeatherData) -> (), onError: @escaping (String) -> ()) {
